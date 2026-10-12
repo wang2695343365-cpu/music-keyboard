@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10151c">
+    <title>EasyInput Beatbox · LAB 03</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true">EI</span>
+        <div>
+          <p class="eyebrow">EASYINPUT / BEATBOX</p>
+          <h1>LAB 03 控制台</h1>
+        </div>
+      </div>
+      <div class="serial-status" id="serial-status" data-state="offline">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="serial-status-text">未连接设备</span>
+      </div>
+      <div class="top-metrics" aria-label="硬件状态">
+        <span>硬件 <strong id="hardware-state">离线</strong></span>
+        <span>音量 <strong id="top-volume">80%</strong></span>
+        <span>BPM <strong id="top-bpm">120</strong></span>
+        <span>配置 <strong id="config-revision">rev 0</strong></span>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="workspace-main" aria-label="演奏区">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">PERFORM</p>
+            <h2>实时演奏</h2>
+          </div>
+          <p class="muted" id="last-event">等待输入</p>
+        </div>
+
+        <div class="transport-strip" aria-label="运输控制">
+          <button class="button button-primary" id="connect-button" type="button">连接设备</button>
+          <button class="button button-secondary" id="play-button" type="button" aria-pressed="false">▶ 播放</button>
+          <button class="button button-secondary" id="stop-button" type="button">■ 停止</button>
+          <div class="tempo-readout">
+            <span class="eyebrow">BPM</span>
+            <strong id="bpm-value">120</strong>
+            <button class="icon-button" id="bpm-down" type="button" aria-label="降低 BPM" title="降低 BPM">−</button>
+            <button class="icon-button" id="bpm-up" type="button" aria-label="提高 BPM" title="提高 BPM">+</button>
+          </div>
+          <button class="button button-record" id="rec-button" type="button" aria-pressed="false"><span class="record-dot" aria-hidden="true"></span> REC</button>
+          <label class="volume-control" for="volume-slider"><span>音量</span><input id="volume-slider" type="range" min="0" max="100" value="80"><strong id="volume-slider-value">80%</strong></label>
+        </div>
+
+        <section class="instrument-panel" aria-labelledby="piano-heading">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">PIANO KEYBOARD</p>
+              <h2 id="piano-heading">钢琴键盘</h2>
+            </div>
+            <div class="note-readout" aria-live="polite">
+              <span id="active-note-name">未按键</span>
+              <span id="active-note-detail">MIDI -- · --</span>
+            </div>
+          </div>
+
+          <div class="keyboard-toolbar">
+            <div class="stepper">
+              <button class="icon-button" id="octave-down" type="button" aria-label="降低八度" title="降低八度">−</button>
+              <span><span class="eyebrow">OCTAVE</span><strong id="octave-value">C4</strong></span>
+              <button class="icon-button" id="octave-up" type="button" aria-label="提高八度" title="提高八度">+</button>
+            </div>
+            <div class="stepper">
+              <button class="icon-button" id="transpose-down" type="button" aria-label="降低半音移调" title="降低半音移调">−</button>
+              <span><span class="eyebrow">TRANSPOSE</span><strong id="transpose-value">0</strong></span>
+              <button class="icon-button" id="transpose-up" type="button" aria-label="提高半音移调" title="提高半音移调">+</button>
+            </div>
+          </div>
+
+          <div class="hardware-map-strip" id="hardware-map-strip" aria-live="polite"></div>
+
+          <div class="keyboard-scroll" aria-label="C2 到 C6 钢琴键盘">
+            <div class="keyboard" id="keyboard"></div>
+          </div>
+          <div class="keyboard-help">
+            <span>鼠标 / 触摸：直接演奏</span>
+            <span>电脑键盘：Z S X D C V G B H N J M</span>
+            <span>橙色 S 标签：对应物理键；黑键可直接点击，不需要组合键</span>
+          </div>
+        </section>
+
+        <section class="pattern-panel" aria-labelledby="pattern-heading">
+          <div class="panel-heading compact">
+            <div>
+              <p class="eyebrow">PATTERN</p>
+              <h2 id="pattern-heading">16 步节奏</h2>
+            </div>
+            <button class="button button-secondary" id="clear-pattern" type="button">清空</button>
+          </div>
+          <div class="pattern-grid" id="pattern-grid"></div>
+        </section>
+      </section>
+
+      <aside class="sidebar" aria-label="设备与协议状态">
+        <section class="side-panel">
+          <p class="eyebrow">DEVICE</p>
+          <h2>设备状态</h2>
+          <dl class="metrics">
+            <div><dt>传输</dt><dd id="transport-state">停止</dd></div>
+            <div><dt>Click</dt><dd id="click-state">开启</dd></div>
+            <div><dt>REC</dt><dd id="rec-state">待机</dd></div>
+            <div><dt>音量</dt><dd id="volume-value">80%</dd></div>
+            <div><dt>串口</dt><dd id="port-state">未连接</dd></div>
+            <div><dt>配置</dt><dd id="save-state">未读取</dd></div>
+          </dl>
+          <button class="button button-wide" id="click-button" type="button" aria-pressed="true">Click 开启</button>
+        </section>
+
+        <section class="side-panel activity-panel">
+          <div class="panel-heading compact">
+            <div>
+              <p class="eyebrow">ACTIVE NOTES</p>
+              <h2>当前音符</h2>
+            </div>
+            <span class="count-badge" id="active-count">0</span>
+          </div>
+          <ul class="active-note-list" id="active-note-list"><li class="muted">没有活动音符</li></ul>
+        </section>
+
+        <section class="side-panel mapping-panel">
+          <p class="eyebrow">HARDWARE PITCH MAP</p>
+          <h2>物理键音高</h2>
+          <p class="side-copy">换一个音高会先试听；确认后，板上 S1–S7 才使用这组音高。</p>
+          <div class="mapping-grid" id="mapping-grid"></div>
+          <p class="side-copy">先点一行的“选琴键”，再点中间钢琴键；应用只改当前运行配置，保存才写入硬件 NVS。</p>
+          <div class="config-actions">
+            <button class="button button-wide" id="apply-config" type="button">应用到硬件</button>
+            <button class="button button-wide" id="save-config" type="button">保存到硬件</button>
+            <button class="button button-wide" id="reload-config" type="button">重新读取硬件配置</button>
+            <button class="button button-wide" id="reset-config" type="button">恢复默认配置</button>
+          </div>
+          <p class="led-map-note">LED 映射：S1–S5 对应 5 颗 WS2812；S6/S7 共用 WS2812 全链活动指示与 GPIO42 绿色状态灯，不伪造七颗独立 RGB 灯。</p>
+          <button class="button button-wide local-audio-button" id="local-audio-button" type="button" aria-pressed="false">电脑端音高：关闭</button>
+        </section>
+
+        <section class="side-panel protocol-panel">
+          <p class="eyebrow">SERIAL LOG</p>
+          <h2>协议日志</h2>
+          <div class="log" id="serial-log" aria-live="polite"></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer-note">板端负责实时音频与节拍；浏览器只负责控制、演奏输入和协议传输。</footer>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
